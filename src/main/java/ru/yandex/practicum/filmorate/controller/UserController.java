@@ -97,6 +97,10 @@ public class UserController {
     }
 
     private void validateBirthday(LocalDate birthday) {
+        if (birthday == null) {
+            log.error("Ошибка валидации: дата рождения отсутствует");
+            throw new ValidationException("Дата рождения не может быть пустой");
+        }
         if (birthday.isAfter(LocalDate.now())) {
             log.error("Ошибка валидации: дата рождения {} позже текущей {}", birthday, LocalDate.now());
             throw new ValidationException("Дата рождения не может быть в будущем");

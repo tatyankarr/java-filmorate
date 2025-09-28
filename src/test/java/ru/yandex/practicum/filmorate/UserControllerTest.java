@@ -111,6 +111,15 @@ public class UserControllerTest {
     }
 
     @Test
+    void createUserWithNullBirthdayShouldThrowValidationException() {
+        User user = createValidUser();
+        user.setBirthday(null);
+        ValidationException exception = assertThrows(ValidationException.class,
+                () -> userController.create(user));
+        assertEquals("Дата рождения не может быть пустой", exception.getMessage());
+    }
+
+    @Test
     void createUserWithFutureBirthdayShouldThrowValidationException() {
         User user = createValidUser();
         user.setBirthday(LocalDate.now().plusDays(1));
