@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -73,6 +73,28 @@ public class InMemoryUserStorage implements UserStorage {
 
         log.info("Пользователь с id={} обновлён", oldUser.getId());
         return oldUser;
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        return Optional.ofNullable(users.get(id));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (!users.containsKey(id)) {
+            log.warn("Попытка удалить пользователя с id={}, но он не найден", id);
+            throw new NotFoundException("Пользователь с id = " + id + " не найден");
+        }
+
+        users.remove(id);
+        log.info("Пользователь с id={} удалён", id);
+    }
+
+    @Override
+    public void clear() {
+        users.clear();
+        log.info("Все пользователи удалены. Коллекция очищена.");
     }
 
     private void validateEmail(String email) {

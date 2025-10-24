@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +18,26 @@ public class FilmService {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+
+    public Collection<Film> findAll() {
+        return filmStorage.findAll();
+    }
+
+    public Film create(Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film film) {
+        return filmStorage.update(film);
+    }
+
+    public void deleteFilm(Long id) {
+        filmStorage.deleteById(id);
+    }
+
+    public void clearAllFilms() {
+        filmStorage.clear();
+    }
 
     public void addLike(Long filmId, Long userId) {
         Film film = getFilmById(filmId);
@@ -46,9 +67,7 @@ public class FilmService {
     }
 
     private Film getFilmById(Long filmId) {
-        return filmStorage.findAll().stream()
-                .filter(f -> f.getId(). equals(filmId))
-                .findFirst()
+        return filmStorage.findById(filmId)
                 .orElseThrow(() -> new NotFoundException("Фильм с id=" + filmId + " не найден"));
     }
 }

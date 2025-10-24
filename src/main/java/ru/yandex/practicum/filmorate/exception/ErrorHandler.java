@@ -22,9 +22,9 @@ public class ErrorHandler {
         return Map.of("error", "Не найдено", "message", e.getMessage());
     }
 
-    @ExceptionHandler(Throwable.class)
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleOtherException(Throwable e) {
+    public Map<String, String> handleOtherException(Exception e) {
         return Map.of("error", "Внутренняя ошибка сервера", "message", e.getMessage());
     }
 }

@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -66,6 +67,29 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.info("Фильм с id={} обновлён", oldFilm.getId());
         return oldFilm;
     }
+
+    @Override
+    public Optional<Film> findById(Long id) {
+        return Optional.ofNullable(films.get(id));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (!films.containsKey(id)) {
+            log.warn("Попытка удалить фильм с id={}, но он не найден", id);
+            throw new NotFoundException("Фильм с id = " + id + " не найден");
+        }
+
+        films.remove(id);
+        log.info("Фильм с id={} удалён", id);
+    }
+
+    @Override
+    public void clear() {
+        films.clear();
+        log.info("Все фильмы удалены. Коллекция очищена.");
+    }
+
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
