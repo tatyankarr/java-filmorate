@@ -26,7 +26,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User create(@RequestBody User user) {
+    public User create(User user) {
         validateUser(user);
 
         if (user.getName() == null || user.getName().isBlank()) {
@@ -40,7 +40,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User update(@RequestBody User newUser) {
+    public User update(User newUser) {
         if (newUser.getId() == null || !users.containsKey(newUser.getId())) {
             log.warn("Ошибка обновления: пользователь с id={} не найден", newUser.getId());
             throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
