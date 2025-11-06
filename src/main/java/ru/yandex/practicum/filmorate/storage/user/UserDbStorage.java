@@ -94,6 +94,13 @@ public class UserDbStorage implements UserStorage {
         log.info("Все пользователи удалены");
     }
 
+    @Override
+    public boolean existsById(Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM users WHERE user_id = ?)";
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        return Boolean.TRUE.equals(exists);
+    }
+
     private User mapRowToUser(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
         User user = new User();
         user.setId(rs.getLong("user_id"));

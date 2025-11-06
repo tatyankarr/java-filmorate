@@ -17,4 +17,6 @@ public interface UserStorage {
     void deleteById(Long id);
 
     void clear();
+
+    boolean existsById(Long id);
 }

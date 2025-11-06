@@ -114,27 +114,6 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film update(Film film) {
         validateFilm(film);
-        if (!existsById(film.getId())) {
-            throw new NotFoundException("Фильм с id=" + film.getId() + " не найден");
-        }
-
-        if (film.getMpa() != null && film.getMpa().getId() != null) {
-            try {
-                mpaDbStorage.findById(film.getMpa().getId());
-            } catch (NotFoundException e) {
-                throw new NotFoundException("MPA с id=" + film.getMpa().getId() + " не найден");
-            }
-        }
-
-        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
-            for (Genre genre : film.getGenres()) {
-                try {
-                    genreDbStorage.findById(genre.getId());
-                } catch (NotFoundException e) {
-                    throw new NotFoundException("Жанр с id=" + genre.getId() + " не найден");
-                }
-            }
-        }
 
         String sql = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ? WHERE film_id = ?";
         int rows = jdbcTemplate.update(sql,
@@ -240,7 +219,12 @@ public class FilmDbStorage implements FilmStorage {
                         new TreeSet<>(Comparator.comparing(Genre::getId))));
 
         String sql = "INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)";
-        uniqueGenres.forEach(g -> jdbcTemplate.update(sql, film.getId(), g.getId()));
+
+        List<Object[]> batchArgs = new ArrayList<>();
+        for (Genre genre : uniqueGenres) {
+            batchArgs.add(new Object[]{film.getId(), genre.getId()});
+        }
+        jdbcTemplate.batchUpdate(sql, batchArgs);
 
         film.setGenres(new ArrayList<>(uniqueGenres));
     }
@@ -315,10 +299,11 @@ public class FilmDbStorage implements FilmStorage {
         });
     }
 
-    private boolean existsById(Long id) {
-        String sql = "SELECT COUNT(*) FROM films WHERE film_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return count != null && count > 0;
+    @Override
+    public boolean existsById(Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM films WHERE film_id = ?)";
+        Boolean exists = jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        return Boolean.TRUE.equals(exists);
     }
 
     private void validateFilm(Film film) {

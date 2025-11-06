@@ -79,10 +79,7 @@ public class FilmService {
     }
 
     private void validateUserExists(Long userId) {
-        boolean exists = userStorage.findAll().stream()
-                .anyMatch(u -> u.getId().equals(userId));
-        if (!exists) {
-            log.warn("Попытка обращения к несуществующему пользователю id={}", userId);
+        if (!userStorage.existsById(userId)) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
         }
     }
