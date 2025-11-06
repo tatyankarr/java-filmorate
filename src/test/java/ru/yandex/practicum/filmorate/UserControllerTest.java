@@ -166,7 +166,7 @@ public class UserControllerTest {
 
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> userController.update(user));
-        assertEquals("Пользователь с id = 999 не найден", exception.getMessage());
+        assertEquals("Пользователь с id=999 не найден", exception.getMessage());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class UserControllerTest {
 
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> userController.update(user));
-        assertEquals("Пользователь с id = null не найден", exception.getMessage());
+        assertEquals("Пользователь с id=null не найден", exception.getMessage());
     }
 
     @Test
